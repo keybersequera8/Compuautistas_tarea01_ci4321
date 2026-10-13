@@ -12,8 +12,8 @@ Instala [Node.js](https://nodejs.org/) en tu sistema para poder instalar las dep
 
 ## Instrucciones para ejecutar el proyecto localmente
 
-1. ** Clonar el repositorio **
+1. **Clonar el repositorio**
 Abre tu terminal y clona el repositorio:
 ```bash
    git clone <URL_DEL_REPOSITORIO>
-   cd equipo_tarea01_ci4321
+   cd NoNameTeam_tarea01_ci4321
