@@ -1,0 +1,10 @@
+:root { color-scheme: dark; --bg: #1b1e2b; --panel: #232738; --fg: #d8dcef; --accent: #7aa2f7; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.5 system-ui, sans-serif; }
+header { display: flex; align-items: center; gap: 16px; padding: 12px 16px; flex-wrap: wrap; }
+h1 { font-size: 18px; margin: 0; }
+/* Estilo adaptado para los nuevos botones de figura y color */
+.controls button { background: var(--panel); color: var(--fg); border: 1px solid #3a4060; border-radius: 6px; padding: 6px 12px; margin: 4px; cursor: pointer; font: inherit; }
+.controls button:hover { background: #3a4060;}
+main { display: flex; gap: 16px; padding: 0 16px 16px; flex-wrap: wrap; align-items: flex-start; }
+#stage canvas { display: block; width: 480px; height: 480px; max-width: 100%; border: 1px solid #3a4060; }
