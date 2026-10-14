@@ -1,5 +1,6 @@
 // Page scaffolding only: toggle, canvas swap and source panel.
 import './style.css';
+import { createShapeVAO } from './graphics';
 
 const stage = document.getElementById('stage')!;
 // Nuevos botones para cambiar la figura y el color:
