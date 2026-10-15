@@ -1,19 +1,36 @@
-# Tarea 1: Figuras Geométricas en WebGL
+# Tarea 1 - Computación Gráfica I
 
-Este proyecto es parte de la Tarea 1 de Computación Gráfica I (CI4321), que consiste en crear una aplicación interactiva desarrollada con WebGL y TypeScript que permita visualizar y alternar entre distintas figuras geométricas (triángulo, cuadrado, hexágono y círculo), así como cambiar sus colores de forma independiente.
+## Integrantes
 
-## NoNameTeam
-* Keyber Sequera 16-11120
-* Gabriel Orejarena 18-10292
+- Gabriel Orejarena 
+- Keyber Sequera 
 
-## Requisitos previos
+En esta tarea trabajamos con 4 figuras: un triángulo, un cuadrado, un hexágono y un círculo y podemos cambiar su color entre rojo, verde y azul.
 
-Instala [Node.js](https://nodejs.org/) en tu sistema para poder instalar las dependencias y ejecutar el servidor de desarrollo.
+## Requisitos
 
-## Instrucciones para ejecutar el proyecto localmente
+- Node.js 18 or later (tested with Node 24)
+- npm
+- A browser with WebGL2 support
 
-1. **Clonar el repositorio**
-Abre tu terminal y clona el repositorio:
-```bash
-   git clone <URL_DEL_REPOSITORIO>
-   cd NoNameTeam_tarea01_ci4321
+## Cómo ejecutar el proyecto
+
+1. Abre la carpeta del proyecto y desde ahi una terminal.
+
+2. Instala las dependencias con este comando:
+
+   ```bash
+   npm install
+   ```
+
+3. Ejecuta el proyecto con este comando:
+
+   ```bash
+   npm run dev
+   ```
+
+4. Abre en Chrome el link que sale en la terminal: `http://localhost:5173/`.
+
+## Uso
+
+Cuando abras la página va a salir un triángulo rojo. Si presionas el botón de figura, ira cambiando entre triángulo, cuadrado, hexágono y círculo y con el botón de color puedes cambiar entre rojo, verde y azul.
