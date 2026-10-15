@@ -9,9 +9,9 @@ En esta tarea trabajamos con 4 figuras: un triángulo, un cuadrado, un hexágono
 
 ## Requisitos
 
-- Node.js 18 or later (tested with Node 24)
+- Node.js 24 
 - npm
-- A browser with WebGL2 support
+- Chrome con soporte para WebGL2
 
 ## Cómo ejecutar el proyecto
 
