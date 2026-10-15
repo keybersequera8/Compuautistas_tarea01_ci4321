@@ -11,32 +11,25 @@ import * as ff from './vendor/ff/ff';
 // Se identifican las figuras geométricas soportadas por la aplicación:
 export type ShapeType = 'triangle' | 'quad' | 'hexagon' | 'circle';
 
-export interface ShapeMesh {
-    readonly vao: WebGLVertexArrayObject;
-    readonly mode: GLenum;
-    readonly count: number;
-    readonly indexed: boolean;
-}
-
 // Se define la geometría en Clip Space del triángulo:
 export const TRIANGLE_VERTICES = new Float32Array([
-    0.0, 0.5,   // Vértice superior
-    -0.5, -0.5, // Vértice inferior izquierdo
-    0.5, -0.5   // Vértice inferior derecho
+    0.0, 0.7, 0.0, // Vértice superior
+    -0.7, -0.6, 0.0, // Vértice inferior izquierdo
+    0.7, -0.6, 0.0, // Vértice inferior derecho
 ])
 
 // Se define la geometría en Clip Space del cuadrado:
 export const QUAD_VERTICES = new Float32Array([
-    -0.5, 0.5,  // Vértice superior izquierdo
-    -0.5, -0.5, // Vértice inferior izquierdo
-    0.5, -0.5,  // Vértice inferior derecho
-    0.5, 0.5    // Vértice superior derecho
+    -0.5, -0.5, 0.0, // Vértice superior izquierdo
+    0.5, -0.5, 0.0, // Vértice inferior izquierdo
+    0.5, 0.5, 0.0, // Vértice inferior derecho
+    -0.5, 0.5, 0.0 // Vértice superior derecho
 ]);
 
 // Se genera el cuadrado con dos triángulos:
 export const QUAD_INDICES = new Uint16Array([
-    0, 1, 2,    // Primer triángulo (arriba-izquierda -> abajo-izquierda -> abajo-derecha)
-    0, 2, 3,    // Segundo triángulo (arriba-izquierda -> abajo-derecha -> arriba-derecha)
+    0, 1, 2, // Primer triángulo (mitad inferior derecha)
+    0, 2, 3, // Segundo triángulo (mitad superior izquierda)
 ]);
 
 const R = 0.5;
@@ -45,13 +38,13 @@ const C = R * Math.cos(Math.PI / 3); // Coordenada x del vértice superior del t
 
 // Se define la geometría en Clip Space del hexágono:
 export const HEXAGON_VERTICES = new Float32Array([
-    0.0, 0.0,       // Centro
-    R, 0.0,         // Derecha
-    C, H,           // Arriba-derecha
-    -C, H,          // Arriba-izquierda
-    -R, 0.0,        // Izquierda
-    -C, -H,         // Abajo-izquierda
-    C, -H           // Abajo-derecha
+    0.0, 0.0, 0.0, // Centro
+    R, 0.0, 0.0, // Derecha
+    C, H, 0.0, // Arriba-derecha
+    -C, H, 0.0, // Arriba-izquierda
+    -R, 0.0, 0.0, // Izquierda
+    -C, -H, 0.0, // Abajo-izquierda
+    C, -H, 0.0, // Abajo-derecha
 ]);
 
 // Se usa gl.TRIANGLE_FAN con drawElements para dibujar el hexágono:
@@ -66,28 +59,31 @@ export const HEXAGON_INDICES = new Uint16Array([
 
 // Se usa gl.TRIANGLE_FAN con drawElements para dibujar el hexágono:
 export const HEXAGON_INDICES_FAN = new Uint16Array([
-    0, 1, 2, 3, 4, 5, 6, 1
+    0, 1, 2, 3, 4, 5, 6, 1,
 ]);
 
 export const MAX_SEGMENTS = 64; // Número máximo de segmentos para aproximar el círculo
 
 // Se define la geometría del círculo:
 export function createCircleGeometry(
-    segments: number, 
+    segments: number = MAX_SEGMENTS,
     radius: number = 0.5
 ): { vertices: Float32Array, indices: Uint16Array } {
     // Se asegura que el número de segmentos esté dentro del rango permitido:
     const n = Math.min(Math.max(3, Math.floor(segments)), MAX_SEGMENTS); // Al menos 3 segmentos para formar un triángulo
-    const vertices = new Float32Array((n+1) * 2); // n+1 vértices (centro + n puntos en la circunferencia)
+    const vertices = new Float32Array((n+1) * 3); // n+1 vértices (centro + n puntos en la circunferencia)
     // Vértice central del círculo:
     vertices[0] = 0.0; // x
     vertices[1] = 0.0; // y
+    vertices[2] = 0.0; // z
 
     // Se calculan los vértices en la circunferencia:
     for (let i = 0; i < n; i++) {
         const angle = (i / n) * 2 * Math.PI; // Ángulo en radianes
-        vertices[(i + 1) * 2] = radius * Math.cos(angle);     // x
-        vertices[(i + 1) * 2 + 1] = radius * Math.sin(angle); // y
+        const offset = (i + 1) * 3; // Offset para el vértice actual
+        vertices[offset] = radius * Math.cos(angle); // x
+        vertices[offset + 1] = radius * Math.sin(angle); // y
+        vertices[offset + 2] = 0.0; // z
     }
 
     // Se usa gl.TRIANGLES con index buffer: n triángulos * 3 índices = 3n índices:
@@ -96,9 +92,9 @@ export function createCircleGeometry(
         const currentIndex = i + 1; // Vértice actual en la circunferencia
         const nextIndex = ((i + 1) % n) + 1; // Conecta al último vértice con el primero
         
-        indices[i * 3] = 0;           // Centro
-        indices[i * 3 + 1] = currentIndex;   // Vértice actual en la circunferencia
-        indices[i * 3 + 2] = nextIndex;      // Vértice siguiente
+        indices[i * 3] = 0; // Centro
+        indices[i * 3 + 1] = currentIndex; // Vértice actual en la circunferencia
+        indices[i * 3 + 2] = nextIndex; // Vértice siguiente
     }
 
     return {vertices, indices};
@@ -113,7 +109,7 @@ export function createCircleGeometry(
     *
     * @param gl - El contexto activo de WebGL2.
     * @param vertices - Arreglo plano de coordenadas 2D (x, y).
-    * @param indices  - Arreglo de índices para la reutilización de vértices.
+    * @param indices - Arreglo de índices para la reutilización de vértices.
     * @returns - El VAO configurado y listo para ser utilizado en el ciclo de renderizado.
     * @throws {Error} Si el navegador o el contexto no pueden asignar memoria para el VAO/VBO.
 */
@@ -141,8 +137,8 @@ export function createShapeVAO(
     // Se habilita y vincula específicamente ATTRIB.POSITION:
     gl.enableVertexAttribArray(ff.ATTRIB.POSITION);
     
-    // Se especifica cómo WebGL lee el arreglo: 2 componentes (x,y) por vértice:
-    gl.vertexAttribPointer(ff.ATTRIB.POSITION, 2, gl.FLOAT, false, 0, 0);
+    // Se especifica cómo WebGL lee el arreglo: 3 componentes (x,y, z) por vértice:
+    gl.vertexAttribPointer(ff.ATTRIB.POSITION, 3, gl.FLOAT, false, 0, 0);
 
     // Se crea y configura el EBO si se proporciona:
     if (indices) {
@@ -163,6 +159,15 @@ export function createShapeVAO(
     return vao;
 }
 
+// Datos necesarios para dibujar las figuras geométricas en el ciclo de renderizado.
+// Se guarda si usa índices o no para saber si llamar a drawElements o drawArrays:
+export interface ShapeMesh {
+    readonly vao: WebGLVertexArrayObject;
+    readonly mode: GLenum;
+    readonly count: number;
+    readonly indexed: boolean;
+}
+
 /** 
  * Inicializa los descriptores geométricos de las figuras soportadas por la aplicación.
  * 
@@ -176,30 +181,29 @@ export function createAllShapes(
     circleSegments: number = MAX_SEGMENTS
 ): Record<ShapeType, ShapeMesh> {
     const circleGeometry = createCircleGeometry(circleSegments);
-    
     return {
         triangle: {
             vao: createShapeVAO(gl, TRIANGLE_VERTICES),
             mode: gl.TRIANGLES,
-            count: TRIANGLE_VERTICES.length / 2,
+            count: TRIANGLE_VERTICES.length / 3, // 3 vértices
             indexed: false,
         },
         quad: {
             vao: createShapeVAO(gl, QUAD_VERTICES, QUAD_INDICES),
             mode: gl.TRIANGLES,
-            count: QUAD_INDICES.length,
+            count: QUAD_INDICES.length, // 6 vértices
             indexed: true,
         },
         hexagon: {
             vao: createShapeVAO(gl, HEXAGON_VERTICES, HEXAGON_INDICES_FAN),
             mode: gl.TRIANGLE_FAN,
-            count: HEXAGON_INDICES_FAN.length,
+            count: HEXAGON_INDICES_FAN.length, // 8 vértices
             indexed: true,
         },
         circle: {
             vao: createShapeVAO(gl, circleGeometry.vertices, circleGeometry.indices),
             mode: gl.TRIANGLES,
-            count: circleGeometry.indices.length,
+            count: circleGeometry.indices.length, // 3 * cicleSegments índices
             indexed: true,
         }
     };

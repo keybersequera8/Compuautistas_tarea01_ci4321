@@ -77,12 +77,30 @@ function render(): void {
   gl!.bindVertexArray(null);
 }
 
+function updateUI(): void {
+  const shapeName = SHAPE_ORDER[currentShapeIndex];
+  const colorName = COLOR_ORDER[currentColorIndex].name;
+
+  btnShape.textContent = `Shape: ${shapeName}`;
+  btnColor.textContent = `Color: ${colorName}`;
+}
+
 // Listener para el botón de cambiar figura:
 btnShape.addEventListener('click', () => {
-  // Lógica para cambiar la figura geométrica: triángulo -> cuadrado -> hexágono -> círculo -> triángulo
+  // Lógica para cambiar las figuras geométricas: triangle -> quad -> hexagon -> circle -> triangle:
+  currentShapeIndex = (currentShapeIndex + 1) % SHAPE_ORDER.length;
+  updateUI();
+  render();
 });
 
 // Listener para el botón de cambiar color:
 btnColor.addEventListener('click', () => {
-  // Lógica para cambiar el color de la figura geométrica: rojo -> verde -> azul -> rojo
+  // Lógica para cambiar el color de la figura geométrica: red -> green -> blue -> red:
+  currentColorIndex = (currentColorIndex + 1) % COLOR_ORDER.length;
+  updateUI();
+  render();
 });
+
+// Se inicializa la aplicación:
+updateUI();
+render();
